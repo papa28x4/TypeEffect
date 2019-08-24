@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        *, body{
+            box-sizing: border-box;
+            margin: 0;
+        }
+        body{
+            font-family: 'Raleway', Verdana, Geneva, Tahoma, sans-serif;
+            color: #ccc;
+        }
+
+                li{
+            list-style: none
+        }
+        a{
+            text-decoration: none;
+            color: #ccc;
+            font-size: 1.3rem;
+        }
+
+        h1{
+            font-size: 4.2rem;
+            padding-top: 0.8rem;
+            letter-spacing: 0.3rem;
+        }
+
+        nav{
+            position: absolute;
+            width: 100%;
+            border-bottom: 1px solid #777;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            
+        }
+
+        .nav-links{
+            display: flex;
+            justify-content: space-around;
+            width: 60%;
+            margin: 0 auto;
+            padding: 1% 2%; 
+        }
+
+        .nav-links li{
+            animation: slideIn 0.5s ease-in forwards;
+        }
+
+        .nav-links li:nth-child(1){
+            transform: translateX(-800px)
+        }
+
+        .nav-links li:nth-child(2){
+            transform: translateY(-400px);
+            animation: bounce 0.5s ease-in 0.3s forwards;
+        }
+
+        .nav-links li:nth-child(3){
+            transform: translateX(800px);
+        }
+
+        .nav-links a{
+            position: relative;
+            padding: 5% 0;
+        }
+        .nav-links a:hover{
+            font-weight: bold;
+        }
+
+        .nav-links a::after,
+        .nav-links a::before{
+            position: absolute;
+            content: '';
+            width: 100%;
+            height: 2px;
+            background-color: #2D9BCD;
+            transform: scaleX(0);
+            transition: all 0.4s ease-in;
+        }
+
+        .nav-links a::after{
+            bottom: 0;
+            left: 0;
+            transform-origin: right;
+        }
+
+        .nav-links a::before{
+            top: 0;
+            transform-origin: left;
+        }
+
+        .nav-links a:hover::before,
+        .nav-links a:hover::after{
+            transform: scaleX(1)
+        }
+
+        @keyframes slideIn{
+            from{
+
+            }
+            to{
+                transform: translateX(0)
+            }
+        }
+
+        @keyframes bounce{
+            from{
+
+            }
+            70%{
+                transform: translateY(2px)
+            }
+            100%{
+                transform: translateY(0)
+            }
+        }
+
+
+        #main{
+            height: 100vh;
+            background: #333 url('images/4.jpg') no-repeat center center /cover;
+            background-blend-mode: multiply;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 3rem;      
+        }
+        h1,h2{
+            font-weight: 200;
+            margin: 0.6rem;
+            line-height: 2.2rem;
+        }
+        h1{
+            font-size: 2.5rem;
+        }
+        h2{
+            font-size: 1.7rem;
+            color: #aaa;
+        }
+        .txt-type > .txt{
+            border-right: 0.15rem solid #777;
+        }
+
+        @media only screen and (max-width: 500px){
+         a{
+            font-size: 0.95rem;
+        }
+        #main{
+             padding: 0 0.3rem; 
+             text-align: center;     
+        }
+        h1,h2{
+            font-weight: 300;
+        }
+            h1{
+            font-size: 1.25rem;
+        }
+        h2{
+            font-size: 0.9rem;
+           
+        }
+        }
+
+    </style>
+    <title>TypeWriter</title>
+
+</head>
+<body>
+        <header class="main-header">
+                <nav>
+                        <ul class="nav-links"> 
+                            <li><a href="Myindex.html">HOME</a></li>
+                            <li><a href="Mystore.html">STORE</a></li>
+                            <li><a href="Myabout.html">ABOUT</a></li>
+                        </ul>
+                    </nav>
+        </header>
+    <div id="main">
+        <h1>Akinwande Opeoluwa The
+            <span class="txt-type" data-wait="3000" data-words='["Corper", "Developer", "Fashionista", "Beauty&#128525;"]'></span>
+        </h1>
+        <h2>Welcome To My Website</h2>
+    </div>
+
+    <script>
+        const TypeWriter = function(txtElement, words, wait=3000){
+            this.txtElement = txtElement;
+            this.words = words;
+            this.txt = '';
+            this.wordIndex = 0;
+            this.wait = parseInt(wait, 10)
+            this.type();
+            this.isDeleting = false;
+        }
+
+        document.addEventListener('DOMContentLoaded', init)
+
+        function init(){
+            const txtElement = document.querySelector('.txt-type');
+            const words = JSON.parse(txtElement.getAttribute('data-words'))
+            console.log(words)
+            const wait = txtElement.getAttribute('data-wait')
+            new TypeWriter(txtElement, words, wait);
+        }
+
+        TypeWriter.prototype.type = function(){
+            
+            const current =this.wordIndex % this.words.length;
+            const fulltext = this.words[current]
+            console.log(fulltext)
+            //Check if deleting
+            if(this.isDeleting){
+                // Remove char
+                this.txt = fulltext.substring(0, this.txt.length - 1)
+            }else{
+                //Add Char
+                this.txt = fulltext.substring(0, this.txt.length+ 1)
+            }
+            //Insert text int element
+            this.txtElement.innerHTML = `<span class="txt">${this.txt}</span>`
+
+            //Initial Type Speed
+            let typeSpeed = 300
+            if(this.isDeleting){
+                typeSpeed /= 2;
+
+            }
+            //Check to see a word is complete
+            if(!this.isDeleting && this.txt === fulltext){
+                //Make pause at the end
+                typeSpeed = this.wait;
+                // set deleting to true
+                this.isDeleting = true;
+            }else if(this.isDeleting && this.txt === ''){
+                this.isDeleting = false;
+                //Move to next word
+                this.wordIndex++;
+                //Pause before start typing
+                typeSpeed = 500;
+            }
+            setTimeout(()=>{
+                this.type()
+            }, 500)
+        }
+    </script>
+</body>
+</html>
